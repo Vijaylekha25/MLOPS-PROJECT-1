@@ -22,7 +22,7 @@ pipeline{
                     sh '''
                     python -m venv ${VENV_DIR}
                     . ${VENV_DIR}/bin/activate
-                    pip install --upgrad pip
+                    pip install --upgrade pip
                     pip install -e .
                     '''
                 }
