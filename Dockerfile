@@ -3,7 +3,8 @@ FROM python:slim
 
 # Set environment variables to prevent Python from writing .pyc files & Ensure Python output is not buffered
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
 
 # Set the working directory
 WORKDIR /app
@@ -24,7 +25,7 @@ RUN pip install --no-cache-dir -e .
 RUN python pipeline/training_pipeline.py
 
 # Expose the port that Flask will run on
-EXPOSE 5000
+EXPOSE 8080
 
 # Command to run the app
 CMD ["python", "application.py"]
