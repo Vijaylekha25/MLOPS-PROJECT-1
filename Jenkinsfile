@@ -84,7 +84,7 @@ pipeline{
                           --timeout=3600 \
                           --max-instances=10 \
                           --min-instances=1 \
-                          --cpu-boost \
+                          --cpu-boost 
                           --session-affinity \
                           --service-account=${SERVICE_ACCOUNT} \
                           --project=${GCP_PROJECT} \
