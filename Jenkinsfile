@@ -28,6 +28,7 @@ pipeline{
                     . ${VENV_DIR}/bin/activate
                     pip install --upgrade pip
                     pip install -e .
+                    pip install gunicorn
                     '''
                 }
             }
@@ -68,6 +69,8 @@ pipeline{
                           --memory=2Gi \
                           --cpu=1 \
                           --timeout=3600 \
+                          --max-instances=10 \
+                          --min-instances=1 \
                           --service-account=${SERVICE_ACCOUNT} \
                           --project=${GCP_PROJECT} \
                           --quiet
