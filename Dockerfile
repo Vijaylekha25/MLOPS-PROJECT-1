@@ -12,6 +12,7 @@ WORKDIR /app
 # Install system dependencies required by LightGBM
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
+    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -21,15 +22,19 @@ COPY . .
 # Install the package in editable mode
 RUN pip install --no-cache-dir -e .
 
-# Pre-train the model during build (CRITICAL FIX)
+# Install Gunicorn explicitly
+RUN pip install --no-cache-dir gunicorn
+
+# Pre-train the model during build (CRITICAL - model ready before app starts)
 RUN python pipeline/training_pipeline.py
 
 # Expose the port that Flask will run on
 EXPOSE 8080
 
-# Health check - ensures container is ready
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/').read()" || exit 1
+# Health check - ensures container is ready before Cloud Run routes traffic
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
 
-# Command to run the app
-CMD exec gunicorn --bind 0.0.0.0:${PORT} --workers 2 --timeout 120 --access-logfile - --error-logfile - application:app
+# Run the app with Gunicorn (production WSGI server)
+# Cloud Run requires app to listen on PORT env var
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT} --workers 2 --worker-class sync --timeout 120 --access-logfile - --error-logfile - --log-level info application:app"]
