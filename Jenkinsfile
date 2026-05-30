@@ -6,6 +6,7 @@ pipeline{
         GCP_PROJECT = "mlops-new-495606"
         GCP_REGION = "us-central1"
         SERVICE_NAME = "ml-project"
+        SERVICE_ACCOUNT = "mlops-project-1@mlops-new-495606.iam.gserviceaccount.com"
     }
 
     stages{
@@ -67,10 +68,9 @@ pipeline{
                           --memory=2Gi \
                           --cpu=1 \
                           --timeout=3600 \
+                          --service-account=${SERVICE_ACCOUNT} \
+                          --project=${GCP_PROJECT} \
                           --quiet
-                        
-                        echo "Deployment successful!"
-                        gcloud run services describe ${SERVICE_NAME} --platform managed --region ${GCP_REGION}
                         '''
                     }
                 }
