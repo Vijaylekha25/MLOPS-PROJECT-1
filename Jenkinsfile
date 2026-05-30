@@ -37,7 +37,7 @@ pipeline{
                     script{
                         echo 'Building and Pushing Docker Image to GCR.................'
                         sh '''
-                        export PATH=$PATH:$(GCLOUD_PATH)
+                        export PATH=$PATH:${GCLOUD_PATH}
 
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
 
@@ -60,7 +60,7 @@ pipeline{
                     script{
                         echo 'Deploy to Google Cloud Run.................'
                         sh '''
-                        export PATH=$PATH:$(GCLOUD_PATH)
+                        export PATH=$PATH:${GCLOUD_PATH}
 
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
 
@@ -70,7 +70,9 @@ pipeline{
                           --image=gcr.io/${GCP_PROJECT}/ml-project:latest \
                           --platform=managed \
                           --region=us-central1 \
-                          --allow-unauthenticated
+                          --allow-unauthenticated \
+                          --service-account=mlops-project-1@mlops-new-495606.iam.gserviceaccount.com \
+                          --quiet
 
                         '''
                     }
