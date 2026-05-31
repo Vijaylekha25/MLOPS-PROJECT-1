@@ -73,22 +73,8 @@ pipeline{
                         # Delete old revisions to save space
                         gcloud run revisions list --service=${SERVICE_NAME} --region=${GCP_REGION} --format='value(name)' --limit=10 | tail -n +4 | xargs -I {} gcloud run revisions delete {} --region=${GCP_REGION} --quiet || true
                         
-                        # Deploy with optimized parameters
-                        gcloud run deploy ${SERVICE_NAME} \
-                          --image=${IMAGE_NAME} \
-                          --platform=managed \
-                          --region=${GCP_REGION} \
-                          --allow-unauthenticated \
-                          --memory=2Gi \
-                          --cpu=1 \
-                          --timeout=3600 \
-                          --max-instances=10 \
-                          --min-instances=1 \
-                          --cpu-boost 
-                          --session-affinity \
-                          --service-account=${SERVICE_ACCOUNT} \
-                          --project=${GCP_PROJECT} \
-                          --quiet
+                        # Deploy with optimized parameters - ALL FLAGS ON ONE LINE
+                        gcloud run deploy ${SERVICE_NAME} --image=${IMAGE_NAME} --platform=managed --region=${GCP_REGION} --allow-unauthenticated --memory=2Gi --cpu=1 --timeout=3600 --max-instances=10 --min-instances=1 --cpu-boost --session-affinity --service-account=${SERVICE_ACCOUNT} --project=${GCP_PROJECT} --quiet
                         
                         # Get service URL
                         SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} --region=${GCP_REGION} --project=${GCP_PROJECT} --format='value(status.url)')
